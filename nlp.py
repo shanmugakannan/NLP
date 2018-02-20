@@ -1,82 +1,52 @@
 import nltk
 from nltk import Tree
-#sentence = ""
-sentence = "remove snatarajapillai from the list Dl-pp-tech"
+
+# Capitalizes the word DL as dl is termed as a verb in NLTK
+def processWords(sentence):
+    term = "dl" #term we want to search for
+    words = sentence.split() #split the sentence into individual words
+    processed_output=""
+    for word in words:
+        if word=='dl':
+            processed_output = processed_output +' ' + word.upper()
+        else:
+            processed_output = processed_output  +' ' + word
+    return processed_output
+# End of Function
+
+#input
+sentence = processWords("remove me from the dl list help-distributionlist")
+
+#Grammar List
+toGrammar = "NP: {<TO><DT>?<PRP|NN.*><PRP|NN.*><PRP|NN.*>?}" # to noun phrase
+fromGrammar = "NP: {<IN><DT>?<PRP|NN.*><PRP|NN.*><PRP|NN.*>?}" # to noun phrase
+#End of Grammar List
+
 tokens = nltk.word_tokenize(sentence)
 tagged = nltk.pos_tag(tokens)
-command =""
-user=""
-userType=""
-dl=""
 
-
-grammar = r"""
-  NP: {<IN><DT>?<PRP|NN.*><NN.*>?}        # from noun phrase
-      {<TO><DT>?<PRP|NN.*><NN.*>?}        # to noun phrase
-"""
-nounphraseParser = nltk.RegexpParser(grammar)
+#1. To Phrase parsing - starts
+nounphraseParser = nltk.RegexpParser(toGrammar)
 result = nounphraseParser.parse(tagged) 
+res = result.subtrees(filter = lambda t: t.label()=='NP')
 
-#entity = nltk.chunk.ne_chunk(tagged)
-#print('start')
-#print(entity)
-#print('end')
 for subtree in result.subtrees(filter = lambda t: t.label()=='NP'):
-        print(subtree.leaves())
-#for subtree in result.subtrees():
-    #print(subtree)
-result.draw()
-          
+    toPhrase = subtree.leaves()
+    nouns = [item for item,tag in toPhrase if tag in ["NN","NNP","NNS"]]
+    print('To Phrase Found')
+    print(nouns)
+#To Phrase parsing - ends
 
-#verbs = [item for item in tagged if item[1] in ["VB","VBD","VBG","VBN","VBP","VBZ"]]
-verbs = [item for item in tagged if item[1] in ["VB"]]
-me = [item for item in tagged if item[1] in ["PRP"]]
-nouns = [item for item in tagged if item[1] in ["NN","NNP","NNS"]]
-to = [item for item in tagged if item[1] in ["TO","OF"]]
-#print(tagged)
-#print('verb',verbs)
-#print('me',me)
-#print('nouns',nouns)
+#2. From Phrase parsing - starts
+nounphraseParser = nltk.RegexpParser(fromGrammar)
+result = nounphraseParser.parse(tagged) 
+res = result.subtrees(filter = lambda t: t.label()=='NP')
 
-#Get the command -- First Verb encountered in the sentence
-for idx,tag in enumerate(tagged):
-    if tag[1] in ["VB"]:
-        command = tag[0]
-        # slice the remaining sentence and provide it as input for further processing
-        afterCommand = tagged[idx+1:]
-        break
+for subtree in result.subtrees(filter = lambda t: t.label()=='NP'):
+    toPhrase = subtree.leaves()
+    nouns = [item for item,tag in toPhrase if tag in ["NN","NNP","NNS"]]
+    print('From Phrase Found')
+    print(nouns)
+#To Phrase parsing - ends
 
-#Get the Member -- Noun after verb
-for idx,tag in enumerate(afterCommand):
-    if tag[1] in ["NN","PRP","NNS"]:
-        user = tag[0]
-        afterSubjectNoun = afterCommand[idx+1:]
-        break
-
-#Get the user type member/owner
-for idx,tag in enumerate(afterSubjectNoun):
-    if tag[1] in ["IN"]:
-        if tag[0] in ["as"]:
-            afterAsConjuction = afterSubjectNoun[idx+1:]
-            for idx,tag in enumerate(afterAsConjuction):
-                if tag[1] in ["NN"]:
-                    userType = tag[0]
-                    afterObjectNoun = afterAsConjuction[idx+1:]
-                    break
-        else:
-            afterObjectNoun  = afterSubjectNoun[idx:]  
-    else:
-            afterObjectNoun  = afterSubjectNoun[idx:]  
-            #print(afterObjectNoun)
-for idx,tag in enumerate(afterObjectNoun):
-    if tag[1] in ["NN","NNP"]:
-        dl = tag[0]
-        break 
-   
-
-
-#print(command)
-#print(user)
-#print(userType)
-#print(dl)
- 
+#result.draw()
