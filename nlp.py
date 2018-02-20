@@ -1,6 +1,7 @@
 import nltk
-sentence = "i want to search for DL"
- 
+from nltk import Tree
+#sentence = ""
+sentence = "remove snatarajapillai from the list Dl-pp-tech"
 tokens = nltk.word_tokenize(sentence)
 tagged = nltk.pos_tag(tokens)
 command =""
@@ -9,12 +10,30 @@ userType=""
 dl=""
 
 
+grammar = r"""
+  NP: {<IN><DT>?<PRP|NN.*><NN.*>?}        # from noun phrase
+      {<TO><DT>?<PRP|NN.*><NN.*>?}        # to noun phrase
+"""
+nounphraseParser = nltk.RegexpParser(grammar)
+result = nounphraseParser.parse(tagged) 
+
+#entity = nltk.chunk.ne_chunk(tagged)
+#print('start')
+#print(entity)
+#print('end')
+for subtree in result.subtrees(filter = lambda t: t.label()=='NP'):
+        print(subtree.leaves())
+#for subtree in result.subtrees():
+    #print(subtree)
+result.draw()
+          
+
 #verbs = [item for item in tagged if item[1] in ["VB","VBD","VBG","VBN","VBP","VBZ"]]
 verbs = [item for item in tagged if item[1] in ["VB"]]
 me = [item for item in tagged if item[1] in ["PRP"]]
 nouns = [item for item in tagged if item[1] in ["NN","NNP","NNS"]]
 to = [item for item in tagged if item[1] in ["TO","OF"]]
-print(tagged)
+#print(tagged)
 #print('verb',verbs)
 #print('me',me)
 #print('nouns',nouns)
@@ -48,7 +67,7 @@ for idx,tag in enumerate(afterSubjectNoun):
             afterObjectNoun  = afterSubjectNoun[idx:]  
     else:
             afterObjectNoun  = afterSubjectNoun[idx:]  
-            print(afterObjectNoun)
+            #print(afterObjectNoun)
 for idx,tag in enumerate(afterObjectNoun):
     if tag[1] in ["NN","NNP"]:
         dl = tag[0]
@@ -56,8 +75,8 @@ for idx,tag in enumerate(afterObjectNoun):
    
 
 
-print(command)
-print(user)
-print(userType)
-print(dl)
+#print(command)
+#print(user)
+#print(userType)
+#print(dl)
  
