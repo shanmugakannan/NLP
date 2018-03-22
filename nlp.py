@@ -1,34 +1,32 @@
-import nltk
+import nltk,sys,json
 from nltk import Tree
 
-# Capitalizes the word DL as dl is termed as a verb in NLTK
-def processWords(sentence):
-    term = "dl" #term we want to search for
-    words = sentence.split() #split the sentence into individual words
-    processed_output=""
-    for word in words:
-        if word=='dl':
-            processed_output = processed_output +' ' + word.upper()
-        else:
-            processed_output = processed_output  +' ' + word
-    return processed_output
-# End of Function
+
+def read_input():
+    return sys.argv[1]
 
 #input
-sentence = processWords("remove me from the dl list help-distributionlist")
+sentence =  read_input()
 
 #Grammar List
-toGrammar = "NP: {<TO><DT>?<PRP|NN.*><PRP|NN.*><PRP|NN.*>?}" # to noun phrase
-fromGrammar = "NP: {<IN><DT>?<PRP|NN.*><PRP|NN.*><PRP|NN.*>?}" # to noun phrase
+#toGrammar = "NP: {<TO><DT>?<PRP|NN.*><PRP|NN.*><PRP|NN.*>?}" # to noun phrase
+toGrammar = "NP: {<TO><DT>?<PRP|NN.*>+}" # to noun phrase
+fromGrammar = "NP: {<IN><DT>?<PRP|NN.*>+}" # to noun phrase
 #End of Grammar List
 
 tokens = nltk.word_tokenize(sentence)
 tagged = nltk.pos_tag(tokens)
 
+#0. Extract Verbs and Nouns
+verbs = [verb[0] for verb in tagged if verb[1] in ["VB"]]
+me = [proper[0] for proper in tagged if proper[1] in ["PRP"]]
+nouns = [noun[0] for noun in tagged if noun[1] in ["NN","NNP","NNS"]]
+print(verbs)
+print(me)
+print(nouns)
 #1. To Phrase parsing - starts
 nounphraseParser = nltk.RegexpParser(toGrammar)
 result = nounphraseParser.parse(tagged) 
-res = result.subtrees(filter = lambda t: t.label()=='NP')
 
 for subtree in result.subtrees(filter = lambda t: t.label()=='NP'):
     toPhrase = subtree.leaves()
@@ -40,7 +38,6 @@ for subtree in result.subtrees(filter = lambda t: t.label()=='NP'):
 #2. From Phrase parsing - starts
 nounphraseParser = nltk.RegexpParser(fromGrammar)
 result = nounphraseParser.parse(tagged) 
-res = result.subtrees(filter = lambda t: t.label()=='NP')
 
 for subtree in result.subtrees(filter = lambda t: t.label()=='NP'):
     toPhrase = subtree.leaves()
@@ -49,4 +46,4 @@ for subtree in result.subtrees(filter = lambda t: t.label()=='NP'):
     print(nouns)
 #To Phrase parsing - ends
 
-#result.draw()
+result.draw()
