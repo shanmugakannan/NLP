@@ -101,3 +101,5 @@ ENV/
 # node
 node_modules/
 sample/
+config/api.config.js
+config/db.config.js
