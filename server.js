@@ -7,7 +7,12 @@ var config = require('./config/api.config');
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+  
 function runNlp(text){
     return new Promise(function(resolve, reject) {
 
@@ -69,5 +74,35 @@ app.get('/DL/isDL/:dl/',function(req,clientresponse){
         });
     });
   });
+  
+  app.get('/user/properties/:username/',function(req,clientresponse){
+    var user = req.params.username;
+    var executor = config.dlmgr.executor;
+    var token = config.dlmgr.token;
+    var apipath = "/api/user/properties";
+
+    var options = {
+      host: config.dlmgr.host,
+      rejectUnauthorized: false,
+      path: [apipath,user,executor,token].join("/")
+    };
+     http.get(options, function(res){
+        console.log(options.path);
+        var body = "";
+        res.on('data', function(data) {
+            body += data;
+        });
+        res.on('end', function() {
+            clientresponse.setHeader('Content-Type', 'application/json')
+            clientresponse.send(body);
+        })
+        res.on('error', function(e) {
+            clientresponse.status(404).send(e.message);
+        });
+    });
+  });
+
+ 
+
 
 app.listen(4000, () => console.log('app listening on port 4000!'))

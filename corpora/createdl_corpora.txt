@@ -1,0 +1,2 @@
+create a new distribution list dl-pp-technology
+create a new dl dl-pp-tech

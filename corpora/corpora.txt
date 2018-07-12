@@ -1,0 +1,21 @@
+create new dl
+rename dl
+change the name
+change the email id
+delete
+Not able to send mail to 
+make me owner of the dl as the owner has left
+
+give me ownership
+add as owner of 
+make owner of 
+I should be able to edit the dl
+owner is disabled
+add me to 
+add to 
+add to dl-pp
+I want to join as a member of
+remove me from 
+remove from 
+Add external contact to DL
+Copy Members from

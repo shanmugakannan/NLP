@@ -12,23 +12,24 @@ output['ObjectNoun'] = {}
 
 #STEP 0 :Read Input######################################################################################
 sentence =  read_input()
-
+ 
 #STEP 1 :Pre-process Input######################################################################################
 
-#STEP 1 ENDS
 # convert to lower case
 sentence = sentence.lower()
 # Replace me with executor
-sentence = sentence.replace('me', 'snatarajapillai',1)
+sentence = sentence.replace(' me ', ' snatarajapillai ',1)
 # Convert "Delete" to "remove"
-sentence = sentence.replace('delete', 'remove',1)
+sentence = sentence.replace(' delete ', ' remove ',1)
 # Convert "Subscribe" to "add"
-sentence = sentence.replace('subscribe', 'add',1)
-# Convert  "dl" to "DL"
-sentence = sentence.replace('dl', 'DL',1)
-sentence = sentence.replace('distributionlist', 'DL',1)
-sentence = sentence.replace('distribution list', 'DL',1)
-
+sentence = sentence.replace(' subscribe ', ' add ',1)
+# Convert  "dl" to "DL"  as NLTK identifies smallcase dl as verb
+# pay attention not to capitalize 'dl' which is part of any DLname 
+# by using space around (' dl ' vs 'dl')
+sentence = sentence.replace(' dl ', ' DL ',1)
+sentence = sentence.replace(' distributionlist ', ' DL ',1)
+sentence = sentence.replace(' distribution list ', ' DL ',1)
+#STEP 1 ENDS
 
 #STEP 2 :Define grammar for Text Parsing######################################################################################
 toGrammar = "NP: {<TO><DT>?<PRP|NN.*>+}" # to noun phrase
@@ -44,42 +45,53 @@ sampleGrammar = r"""
         {<NBAR><IN><NBAR>}  # Above, connected with in/of/etc...
 """
 grammar = r"""     
-    TO: {<TO><DT>?<PRP|NN.*>+} # to phrase  [To get the object]       
-    FROM: {<IN><DT>?<PRP|NN.*>+} # from phrase [To get the object]
-    SBJ: {<VB.*><PRP|NN.*|VB.*>+} # verb phrase [To get the subject]
+    SBJ: {<VB.*><PRP|NN.*|VB.*|JJ>+} # ADD X [Get the subject]
+    TO: {<TO><DT>?<PRP|NN.*|JJ>+} # Add X TO DL [Get the Object]
+    FROM:{<IN><DT>?<PRP|NN.*|JJ>+} # Remove X FROM [Get the Object]
 """
 #End of Grammar List
 
 #Step 3 : Parse
 tokens = nltk.word_tokenize(sentence)
 tagged = nltk.pos_tag(tokens) 
+print(tagged)
 
 #STEP 3.1 Verb Phrase parsing - starts
 phraseParser = nltk.RegexpParser(grammar)
 result = phraseParser.parse(tagged) 
-#print(result)
 #result.draw()
 for subtree in result.subtrees(filter = lambda t: t.label()=='SBJ'):
         subject = subtree.leaves()
         #Get the Verb
-        verbsinSubject = [item for item,tag in subject if tag in ["VB"]]
+        verbsinSubject = [item for item,tag in subject if tag in ["VB","RB"]]
         SubjectVerb = verbsinSubject
         #Get the Noun
-        nounsinSubject = [item for item,tag in subject if tag in ["NN","NNP","NNS"]]
+        nounsinSubject = [item for item,tag in subject if tag in ["NN","NNP","NNS","JJ","RB"]]
         output['Subject'] = nounsinSubject 
 #Verb Phrase parsing - ends    
 
- #STEP 3.2 Preposition Phrase(FROM) parsing - starts
+#STEP 3.2 Preposition Phrase(FROM) parsing - starts
 for subtree in result.subtrees(filter = lambda t: t.label()=='FROM'):
-    phrase = subtree.leaves()
-    nounsinToPhrase = [item for item,tag in phrase if tag in ["NN","NNP","NNS"]]
-    output['ObjectNoun'] = nounsinToPhrase
+    phrases = subtree.leaves() 
+    for leaf in phrases: 
+        # check for phrases starting with "as"
+        asPhrase = [item for item,tag in phrases if item.upper() in ["AS"]]
+        if(len(asPhrase) > 0):
+            nounsinAsPhrase = [item for item,tag in phrases if tag in ["NN","NNP","NNS","JJ"]]
+            output['Role'] = nounsinAsPhrase
+              
+        # check for phrases starting with "from"
+        fromPhrase = [item for item,tag in phrases if item.upper() in ["FROM","OF"]]
+        if(len(fromPhrase) > 0):
+            nounsinFromPhrase = [item for item,tag in phrases if tag in ["NN","NNP","NNS","JJ"]]
+            output['ObjectNoun'] = nounsinFromPhrase
+             
 #Preposition Phrase parsing - ends
 
 #STEP 3.3 Preposition Phrase(TO followed by verb) parsing - starts
 for subtree in result.subtrees(filter = lambda t: t.label()=='TO'):
     phrase = subtree.leaves()
-    nounsinToPhrase = [item for item,tag in phrase if tag in ["VB","JJ","NN","NNP","NNS"]]
+    nounsinToPhrase = [item for item,tag in phrase if tag in ["NN","NNP","NNS","VB","JJ"]]
     output['ObjectNoun'] = nounsinToPhrase
 #Preposition Phrase parsing - ends
 
