@@ -103,3 +103,4 @@ node_modules/
 sample/
 config/api.config.js
 config/db.config.js
+corpora/~$Corpora.xlsx

@@ -2,6 +2,8 @@ import sys,nltk
 import math
 from collections import Counter
 
+#variables
+vocab_word_list = []
 #functions
 def read_input():
     return sys.argv[1]
@@ -14,20 +16,20 @@ def cleanse_input(sentence):
     sentence = sentence.replace('my-self ', ' me ',1)
     #Replace "me" with "PRP" proper noun
     sentence = sentence.replace(' me ', ' PRP ',1)
-    ignore_words = ['please','pls','a','an','the','dl','dls',"'s",'distributionlist','distribution','list']
+    ignore_words = ['please','pls','a','an','the','dl','dls',"'s",'distributionlist','distribution','list','-']
     input_words = nltk.word_tokenize(sentence)
     #print(input_words)
     cleaned_words = [word.lower() for word in input_words if word.lower() not in ignore_words]
     return cleaned_words
 
-def build_vocab(sentence):
+def remove_noun(sentence):
     #Cleanse the input sentence
     words = cleanse_input(sentence)
     output_sentence=""
     for word in words:
         tokens = nltk.word_tokenize(word)
         grammar_tag = nltk.pos_tag(tokens) 
-        print(grammar_tag)
+        #print(grammar_tag)
         tagged_word = grammar_tag[0] 
         
         if(tagged_word[1] in ['NN','NNS']):
@@ -42,8 +44,7 @@ def build_vocab(sentence):
 
 def build_vector(iterable):
     counter = Counter(iterable)
-    all_items = set(counter.keys()).union(set(counter2.keys()))
-    vector = [counter[k] for k in all_items]
+    vector = [counter[k] for k in vocab_word_list]
     return vector
 
 def cosim(v1, v2):
@@ -55,15 +56,20 @@ def cosim(v1, v2):
 # End of functions
 
 #STEP 0: Build Vocabulary
-file = open("corpora\subscribe_corpora.txt", "r") 
+file = open("corpora\corpora.txt", "r") 
 subscribe_corpora = file.readlines()
-for sentence in subscribe_corpora:
-    print(build_vocab(sentence));
 
+  
+for sentence in subscribe_corpora:
+    sentence_nouns_masked = remove_noun(sentence)
+    words = nltk.word_tokenize(sentence_nouns_masked)  
+    vocab_word_list.extend(words)
+
+print(sorted(list(set(vocab_word_list))))
 
 #STEP 1: Read Input
-sentence =  read_input()
-vector
+#sentence =  read_input()
+ 
 
 
 

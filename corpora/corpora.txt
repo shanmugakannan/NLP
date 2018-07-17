@@ -1,21 +1,30 @@
-create new dl
-rename dl
-change the name
-change the email id
-delete
-Not able to send mail to 
+create a new distribution list dl-pp-technology
+create a new dl dl-pp-tech
+add miklu as an owner of dl-pp
+give me owner access to the following DLs - dl-pp-tech,dl-pp-cruz
+give me ownership of the dl dl-pp-echno
+add shanmuga as owner of dl-pp
 make me owner of the dl as the owner has left
-
-give me ownership
-add as owner of 
-make owner of 
-I should be able to edit the dl
-owner is disabled
-add me to 
-add to 
-add to dl-pp
-I want to join as a member of
-remove me from 
-remove from 
-Add external contact to DL
-Copy Members from
+Need to change Admin to myself 
+Pls change the Admin to myself
+set as the co-owners
+trying to add as an owner on
+remove shanmuga from ownership of dl-pp
+remove shanmuga from the owners list of the DL dl-ppptech
+add me to  the distributionlist dl-pp-technology
+add new member shanmuga to dl-pp-tech
+join the DL DL-pp-tech
+subscribe me to  
+subscribe snatarajapillai to  dl-pptech
+Add dl-pp-tech as a sub-dl of dl-pptech
+please add shanmuga as a member of dl-pp-tech
+I need to leave following DLs dl-pp-tech
+help me remove shanmuga from sl-pp-apicalling
+leave the dl  dl-pp-apicalling
+unsubscribe me from  dl-pp-technology
+please help me with removal from this DL dl-pp-tech
+remove me from  dl-pp-os
+remove my self from this DL
+delete dl-pp
+delete the following DL
+Please delete the DL
