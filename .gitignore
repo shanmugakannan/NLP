@@ -104,3 +104,5 @@ sample/
 config/api.config.js
 config/db.config.js
 corpora/~$Corpora.xlsx
+vector.txt
+words.txt
